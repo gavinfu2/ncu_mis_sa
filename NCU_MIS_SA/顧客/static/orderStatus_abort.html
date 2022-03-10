@@ -1,0 +1,228 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+.aligncenter {
+	text-align: center;
+	}
+</style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cart Page</title>
+
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="static/css/fc1ab68d70ad48e88943ce422f4566dc.css" rel="stylesheet" />
+<link rel="stylesheet" href="static/css/bootstrap.min.css" />
+<link rel="stylesheet" href="static/css/bootstrap-select.min.css" />
+<link rel="stylesheet" href="static/css/animate.min.css" />
+<link rel="stylesheet" href="static/css/all.min.css" />
+<link rel="stylesheet" href="static/css/jarallax.css" />
+<link rel="stylesheet" href="static/css/organik-icons.css" />
+<link rel="stylesheet" href="static/css/jquery.magnific-popup.css" />
+<link rel="stylesheet" href="static/css/nouislider.min.css" />
+<link rel="stylesheet" href="static/css/nouislider.pips.css" />
+<link rel="stylesheet" href="static/css/odometer.min.css" />
+<link rel="stylesheet" href="static/css/swiper.min.css" />
+<link rel="stylesheet" href="static/css/tiny-slider.min.css" />
+
+<link rel="stylesheet" href="static/css/organik.css" />
+
+
+</head>
+<body>
+<div class="preloader">
+<img class="preloader__image" width="55" src="static/picture/loader.png" alt="" />
+</div>
+
+
+<div class="stricky-header stricked-menu main-menu">
+<div class="sticky-header__content"></div>
+</div>
+<section class="page-header">
+<div class="page-header__bg" style="background-image: url(static/images/page-header-bg-1-1.jpg);"></div>
+
+<div class="container">
+<font face="serif">
+<h2><font face="微軟正黑體">訂單狀態</font></h2>
+<ul class="thm-breadcrumb list-unstyled">
+<li><a href="index.html">Home</a></li>
+<li>/</li>
+<li><span>Order Status</span></li>
+</ul>
+</div>
+</section>
+<!--
+<p class="aligncenter" id="order_status_panel">
+
+</p>
+  -->
+		<div id="order_status_panel" class="row">
+        </div>
+<script>  
+var id = 1;
+function getOrder() {
+	
+      $.ajax({
+        type: "GET",
+        url: "../api/meals.do",
+        //data: "id=" + id,
+        crossDomain: true,
+        cache: false,
+        dataType: 'json',
+        timeout: 5000,
+        success: function (response) {
+          alert("連線到伺服器！");
+          if (response.status == 200) {
+        	var order_status_panel = '';
+        	
+        	$.each(response.response.data, function (){
+        		order_status_panel += addOrder_status(this);
+        	})
+        	
+        	$("#order_status_panel").append(order_status_panel);
+          }
+        },
+        error: function () {
+          alert("無法連線到伺服器！");
+        }
+      });
+    }
+   
+	let inner_html = '';
+	inner_html += '<p class="aligncenter"><font face="微軟正黑體" size="6">餐點製作中</font></p><p class="aligncenter"><img src="static/images/cooking.gif" alt=""></p>';
+	order_status_panel += inner_html;
+	alert(order_status_panel);
+	alert("1");
+	$("#order_status_panel").append(order_status_panel);
+	alert("2");
+    
+    function addOrder_status(data) {
+    	let inner_html = '';
+    	
+    	if(id==1){
+    		inner_html += '<p class="aligncenter"><font face="微軟正黑體" size="6">餐點製作中</font></p><p class="aligncenter"><img src="static/images/cooking.gif" alt=""></p>';
+    	
+			return inner_html;
+    	}
+    	
+    }
+
+    function setButtonFunction() {
+    	$('button[name="add_cart"]').click(function () {
+    		var action = (this.id).split('_')[0];
+    		var destination = (this.id).split('_')[1];
+    		var id = (this.id).split('_')[2];
+    		addProductToCart(id, 1);
+        });
+    }
+    
+    function getCartDataFromClient() {
+    	let cart = JSON.parse(localStorage.getItem("client_cart_obj"));
+    	let amount = JSON.parse(localStorage.getItem("client_cart_amount"));
+    	cart = !cart ? new Array() : cart;
+    	amount = !amount ? new Array() : amount;
+    	return [cart, amount];
+    }
+    
+    function addProductToCart(id, amount) {
+    	if (!(client_cart_obj.includes(id))) {
+    		client_cart_obj.push(id);
+    		client_cart_amount.push(amount);
+    		updateCartDataToClent();
+    	}
+    	
+    	checkIfExistInCart();
+    }
+    
+    function updateCartDataToClent() {
+    	localStorage.setItem("client_cart_obj", JSON.stringify(client_cart_obj));
+    	localStorage.setItem("client_cart_amount", JSON.stringify(client_cart_amount));
+    }
+    
+    function checkIfExistInCart() {
+    	$('button[name="add_cart"]').each(function (){
+    		var action = (this.id).split('_')[0];
+    		var destination = (this.id).split('_')[1];
+    		var id = (this.id).split('_')[2];
+    		if (client_cart_obj.includes(id)) {
+    			setButtonState(this.id, false);
+    		}
+    		else {
+    			setButtonState(this.id, true);
+    		}
+    		
+        });
+    }
+    
+    function setButtonState(id, action) {
+    	if (!action) {
+    	    $('#' + id).prop('disabled', true);
+    	    $('#' + id).addClass('disabled');
+    	    $('#' + id).html('已加入');
+    	}
+    	else {
+    		$('#' + id).prop('disabled', false);
+    	    $('#' + id).removeClass('disabled');
+    	    $('#' + id).html('加入購物車');
+    	}
+    }
+  </script>
+<!--<p class="aligncenter">
+<font face="微軟正黑體" size="6">餐點製作中</font>
+</p>
+<p class="aligncenter">
+<img src="static/images/cooking.gif" alt="">
+</p>
+
+<elseif condition="$status eq 2"/>
+<p class="aligncenter">
+<font face="微軟正黑體" size="6">餐點製作中</font>
+</p>
+<p class="aligncenter">
+<img src="static/images/cooking.gif" alt="">
+</p>
+
+<elseif condition="$status eq 3"/>
+<p class="aligncenter">
+<font face="微軟正黑體" size="6">餐點運送中</font>
+</p>
+<p class="aligncenter">
+<img src="static/images/delivering.gif" alt="">
+</p>
+
+<elseif condition="$status eq 4"/>
+<p class="aligncenter">
+<font face="微軟正黑體" size="6">目前尚無訂單處理中</font>
+</p>
+<p class="aligncenter">
+<img src="static/images/noOrder.jpg" alt="">
+</p>
+</if>
+-->
+
+
+
+<a href="#" data-target="html" class="scroll-to-target scroll-to-top"><i class="fa fa-angle-up"></i></a>
+
+<script src="static/js/jquery-3.5.1.min.js"></script>
+<script src="static/js/bootstrap.bundle.min.js"></script>
+<script src="static/js/bootstrap-select.min.js"></script>
+<script src="static/js/jarallax.min.js"></script>
+<script src="static/js/jquery.ajaxchimp.min.js"></script>
+<script src="static/js/jquery.appear.min.js"></script>
+<script src="static/js/jquery.circle-progress.min.js"></script>
+<script src="static/js/jquery.magnific-popup.min.js"></script>
+<script src="static/js/jquery.validate.min.js"></script>
+<script src="static/js/nouislider.min.js"></script>
+<script src="static/js/odometer.min.js"></script>
+<script src="static/js/swiper.min.js"></script>
+<script src="static/js/tiny-slider.min.js"></script>
+<script src="static/js/wnumb.min.js"></script>
+<script src="static/js/wow.js"></script>
+<script src="static/js/isotope.js"></script>
+<script src="static/js/countdown.min.js"></script>
+
+<script src="static/js/organik.js"></script>
+
+</body>
+</html>

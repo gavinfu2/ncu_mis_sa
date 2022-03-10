@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+	<head>
+		<meta charset="utf-8" />
+		<title>新增餐點</title>
+		<style type="text/css">
+			*{ font-family:微軟正黑體; }
+			body{ 
+				background-color: white; 
+				height:680px;
+			}
+			#name,#price,#describe,#profile_pic,#calorie{
+				width: 250px;
+  				height: 20px;
+ 				margin: 10px;
+  				color: #5b9422;
+			}
+			h5{
+  				margin: 20px;
+  				color: #a3a2a3;
+			}
+			h5:hover{ color: black; }
+			#container{
+				padding: 10px;
+  				width: 280px;
+  				height: 400px;
+  				background-color: white;
+  				border-radius: 5px;
+  				border-top: 10px solid #5b9422;
+  				box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+				
+				position:relative;   
+  				margin: auto;
+  				top: 20px;
+				text-align:center;
+			}
+			.system_name{
+  				position:relative;   
+  				margin: auto;
+  				top: 10px;
+  				text-align:center; 
+			}
+			.submit{
+  				color: white;  
+  				background: #5b9422;
+  				width: 200px;
+  				height: 30px;
+  				margin: 10px;
+  				padding: 5px;
+  				border-radius: 5px;
+  				border: 0px;
+			}
+			.submit:hover{ background: #48691a; }
+			input{
+  				padding: 5px;
+  				border: none; 
+  				border:solid 1px #ccc;
+  				border-radius: 5px;
+			}
+			.go_homepage{
+				position:relative;   
+  				margin: auto;
+  				top: 50px;
+  				text-align:center; 
+			}
+		</style>
+	</head>
+	<body>
+		<div class="system_name"><h2>外送服務系統</h2></div>
+		<div class="register_page">
+			<div id="container">
+				<div class="register">
+					<h3>新增餐點</h3>
+					<form id="form" enctype="multipart/form-data">
+						<input type="text" id="name" name="name" placeholder="餐點名稱" required>
+            					<div class="tab"></div>
+						<input type="text" id="price" name="price" placeholder="價格" required>
+            					<div class="tab"></div>
+            					<input type="text" id="describe" name="describe" placeholder="餐點描述" required>
+            					<div class="tab"></div>
+            					<input type="file" id="profile_pic" name="profile_pic" accept=".jpg, .jpeg, .png"><br>
+            					<div class="tab"></div>
+            					<input type="password" id="calorie" name="calorie" placeholder="卡路里" required>
+            					<div class="tab"></div>            
+            					<input type="submit" value="新增" class="submit" data-action="submit">
+          				</form>
+				</div>
+			</div>
+			<a href=""><h5 class="go_homepage">回管理頁面</h5></a>
+		</div> 
+		<script type="text/javascript">
+			const submitBtn = document.querySelector('[data-action="submit"]');
+			
+			submitBtn.addEventListener("click", processFormData);
+			
+			function processFormData(e) {
+				
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Spice Mystery</title>
+    <link href="statics/icon/favicon.ico" type="image/x-icon" rel="icon">
+    <link href="statics/icon/favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <link rel="stylesheet" type="text/css" href="cake.generic.css">
+
+	<script src="../statics/js/jquery-3.4.1.min.js"></script>
+	<script src="../statics/js/jquery-confirm.js"></script>
+<!-- 
+	<script src="statics/js/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+ -->    
+</head>
+
+<body>
+    <div id="container">
+        <div id="header">
+            <h1><a href="index.html"><img src="images/logo.png" class="img-responsive" alt=""></a></h1>
+        </div>
+  <div id = "hori"></div>
+        <div id="content">
+            <h2>更新顧客資料</h2>
+            <a href="meals.html">餐點管理</a>
+            <a href="customer.html">顧客管理</a>
+            <a href="deliveryman.html">外送員管理</a>
+
+            <div id="flashMessage" class="message" style="display: none;"></div>
+
+            <form id="form" accept-charset="utf-8">
+                <div style="display:none;"><input type="hidden" name="_method" value="POST"></div>
+                <div class="input text required">
+                    <label for="customer_name">顧客名稱</label>
+                    <input name="name" maxlength="30" type="text" id="customer_name" required="required">
+                </div>
+                <div class="input mail required">
+                    <label for="customer_email">Email</label>
+                    <input name="email" maxlength="30" type="email" id="customer_email" required="required">
+                </div>
+                <div class="input password required">
+                    <label for="customer_password">密碼</label>
+                    <input name="password" maxlength="30" type="password" id="customer_password" required="required">
+                </div>
+    <div class="input address required">
+                    <label for="customer_address">地址</label>
+                    <input name="address" maxlength="30" type="text" id="customer_address" required="required">
+                </div>
+    <div class="input phone required">
+                    <label for="customer_phone">電話</label>
+                    <input name="phone" maxlength="30" type="tel" id="customer_phone" required="required">
+                </div>
+    
+                <div class="submit"><input type="button" value="更新" id="submit"></div>
+            </form>
+
+            <script type="text/javascript">
+                // 取得網址參數
+                var url_string = window.location.href;
+                var url = new URL(url_string);
+                var id = url.searchParams.get("id");
+                var sql_num = 0;
+
+                function update(id) {
+                    var name = $('#customer_name').val();
+                    var email = $('#customer_email').val();
+                    var password = $('#customer_password').val();
+                    var address = $('#customer_address').val();
+                    var phone = $('#customer_phone').val();
+                    var password_rule = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+                    if(!password_rule.test(password)) {
+                        alert("密碼格式不符，長度至少8，且至少包含一個數字和英文字母！");
+                    }
+                    else {
+                        // 將資料組成JSON格式
+                        var data_object = {
+                            "id": id,
+                            "name": name,
+                            "email": email,
+                            "password": password,
+                            "address": address,
+                            "phone":phone
+                        };
+
+                        // 將JSON格式轉換成字串
+                        var data_string = JSON.stringify(data_object);
+
+                        // 發出POST的PUT請求
+                        $.ajax({
+                                type: "PUT",
+                                url: "../api/customer.do",
+                                data: data_string,
+                                crossDomain: true,
+                                cache: false,
+                                dataType: 'json',
+                                timeout: 5000,
+                                success: function (response) {
+                                    $('#flashMessage').html(response.message);
+                                    $('#flashMessage').show();
+                                    if(response.status == 200){
+                                        updateSQLTable(response.response);
+                                        getMember();
+                                    }
+                                },
+                                error: function () {
+                                    alert("無法連線到伺服器！");
+                                }
+                        });
+                    }
+                }
+
+                function getCustomer() {
+                    $.ajax({
+                        type: "GET",
+                        url: "../api/customer.do",
+                        crossDomain: true,
+                        data: "id=" + id,
+                        cache: false,
+                        dataType: 'json',
+                        timeout: 5000,
+                        success: function (response) {
+                            if(response.status == 200){
+                             updateSQLTable(response.response);
+                             document.getElementById('customer_name').value = response['response']['data'][0]['name'];
+                             document.getElementById('customer_email').value = response['response']['data'][0]['email'];
+                             document.getElementById('customer_password').value = response['response']['data'][0]['password'];
+                             document.getElementById('customer_address').value = response['response']['data'][0]['address'];
+                             document.getElementById('customer_phone').value = response['response']['data'][0]['phone'];
+                             document.getElementById('customer_login_times').value = response['response']['data'][0]['login_times'];
+                             document.getElementById('customer_status').value = response['response']['data'][0]['status'];
+                            }
+                            console.log(response);
+                        },
+                        error: function () {
+                            alert("無法連線到伺服器！");
+                        }
+                    });
+                }
+
+                $('#submit').click(function() {
+                    updateMember(id)
+                });
+                
+                $(document).ready(function() {
+                 // 發出GET的AJAX請求取得原本該會員的資料
+                  $("#sql_log > tbody").empty();
+                    getMember();
+                });
+            </script>
+        </div>
+    </div>
+</body>
+</html>

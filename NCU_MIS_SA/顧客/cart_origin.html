@@ -1,0 +1,410 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cart Page</title>
+
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="static/css/fc1ab68d70ad48e88943ce422f4566dc.css" rel="stylesheet" />
+<link rel="stylesheet" href="static/css/bootstrap.min.css" />
+<link rel="stylesheet" href="static/css/bootstrap-select.min.css" />
+<link rel="stylesheet" href="static/css/animate.min.css" />
+<link rel="stylesheet" href="static/css/all.min.css" />
+<link rel="stylesheet" href="static/css/jarallax.css" />
+<link rel="stylesheet" href="static/css/organik-icons.css" />
+<link rel="stylesheet" href="static/css/jquery.magnific-popup.css" />
+<link rel="stylesheet" href="static/css/nouislider.min.css" />
+<link rel="stylesheet" href="static/css/nouislider.pips.css" />
+<link rel="stylesheet" href="static/css/odometer.min.css" />
+<link rel="stylesheet" href="static/css/swiper.min.css" />
+<link rel="stylesheet" href="static/css/tiny-slider.min.css" />
+
+
+<link rel="stylesheet" href="static/css/organik.css" />
+</head>
+<body>
+<div class="preloader">
+<img class="preloader__image" width="55" src="static/picture/loader.png" alt="" />
+</div>
+
+
+<div class="stricky-header stricked-menu main-menu">
+<div class="sticky-header__content"></div>
+</div>
+<section class="page-header">
+<div class="page-header__bg" style="background-image: url(static/images/page-header-bg-1-1.jpg);"></div>
+
+<div class="container">
+<font face="serif">
+<h2><font face="微軟正黑體">購物車</font></h2>
+<ul class="thm-breadcrumb list-unstyled">
+<li><a href="index.html">Home</a></li>
+<li>/</li>
+<li><span>Cart</span></li>
+</ul>
+</div>
+</section>
+<section class="cart-page">
+<div class="container">
+<div class="table-responsive">
+<table class="table cart-table">
+<thead>
+<tr>
+<th><font face="微軟正黑體">餐點</font></th>
+<th><font face="微軟正黑體">單價</font></th>
+<th><font face="微軟正黑體">數量</font></th>
+<th><font face="微軟正黑體">價格</font></th>
+<th><font face="微軟正黑體">移除</font></th>
+</tr>
+</thead>
+
+<tbody id="cart_table">
+
+<tr>
+<td>
+<div class="product-box">
+<img src="static/picture/cart-1-1.jpg" alt="">
+<h3><font face="微軟正黑體">水果海鮮總匯沙拉<br><br></font><font face="微軟正黑體" font size="2">熱量: 150(kcal)</font></h3>
+</div>
+</td>
+<td>NT$250</td>
+<td>
+<div class="quantity-box">
+<button type="button" class="sub">-</button>
+<input type="number" id="2" value="2" />
+<button type="button" class="add">+</button>
+</div>
+</td>
+<td>
+NT$500
+</td>
+<td>
+<button type="button" class="organik-icon-close remove-icon"></button>
+</td>
+</tr>
+
+
+
+<tr>
+<td>
+<div class="product-box">
+<img src="static/picture/cart-1-2.jpg" alt="">
+<h3><font face="微軟正黑體">西班牙豬肉捲餅佐食蔬<br><br></font><font face="微軟正黑體" font size="2">熱量: 423(kcal)</font></h3>
+</div>
+</td>
+<td>NT$450</td>
+<td>
+<div class="quantity-box">
+<button type="button" class="sub">-</button>
+<input type="number" id="2" value="1" />
+<button type="button" class="add">+</button>
+</div>
+</td>
+<td>
+NT$450
+</td>
+<td>
+<button type="button" class="organik-icon-close remove-icon"></button>
+</td>
+</tr>
+
+</tbody>
+
+</table>
+</div>
+<div class="row">
+<div class="col-lg-8">
+
+</div>
+<div class="col-lg-4">
+<ul class="cart-total list-unstyled">
+<li>
+<span><font face="微軟正黑體">總價</font></span>
+NT$<span id="meals_total_price">950</span>
+</li>
+<li>
+<span><font face="微軟正黑體">運費</font></span>
+NT$<span id="delivery_price">100</span>
+</li>
+<li>
+<span>Total</span>
+NT$<span id="total_price">1050</span>
+</li>
+</ul>
+<div class="button-box">
+<button class="thm-btn" id="clean" type="button">Clear</button>
+<a href="orderStatus.html" class="thm-btn" id="check" type="button">Checkout</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+ <script>
+ 	console.log("11");
+    var [client_cart_obj, client_cart_amount]  = getCartDataFromClient();
+
+    if (client_cart_obj.length == 0) {
+    	alert("購物車沒有任何商品！");
+    	calcSummaryInformation();
+    	setButtonState("check", false);
+    }
+    else
+    	getCartProduct();
+
+    $("#check").click(function () {
+    	var data = {
+    			"customer_id": 1,
+    			"deliveryman_id": null,
+    			"order_status": 1,
+    			"delivery_fee": 100,
+    			"total_price": 1050,
+    			"total_kcal": 723,
+    			"item": client_cart_obj,
+    			"quantity": client_cart_amount
+    	}
+
+    	var data_string = JSON.stringify(data);
+
+    		// 發出POST的AJAX請求
+        $.ajax({
+          type: "POST",
+          url: "../api/order.do",
+          data: data_string,
+          crossDomain: true,
+          cache: false,
+          dataType: 'json',
+          timeout: 5000,
+          success: function (response) {
+              if(response.status == 200){
+              	$.confirm({
+                    theme: 'modern',
+                    icon: 'fa fa-check-circle-o',
+                    type: 'green',
+                    animation: 'scale',
+                    title: '系統提醒',
+                    content: "「購物車結帳成功」，已完成新增訂單！",
+                    buttons: {
+                        確定: {
+                            text: '確定',
+                            btnClass: 'btn-blue',
+                            action: function () {
+                          	  cleanAllData();
+                              document.location.href = "orderStatus.html";
+                            }
+                        }
+                    }
+                });
+              }
+          },
+          error: function () {
+              alert("無法連線到伺服器！");
+          }
+        });
+    });
+
+    $("#clean").click(function () {
+    	console.log("[@Action]清空購物車");
+    	cleanAllData();
+    });
+
+    function cleanAllData() {
+      client_cart_obj = [];
+      client_cart_amount = [];
+      updateCartDataToClent();
+      $("#cart_table > tbody").empty();
+      $("#meals_total_price").html('0');
+      $("#delivery_price").html('0');
+      $("#total_price").html('0');
+      setButtonState("check", false);
+    }
+
+    function getCartProduct() {
+      $.ajax({
+        type: "GET",
+        url: "../api/meals.do",
+        crossDomain: true,
+        cache: false,
+        data: "id_list=" + client_cart_obj.toString(),
+        dataType: 'json',
+        timeout: 5000,
+        success: function (response) {
+          if (response.status == 200) {
+        	  updateCartTable(response.response.data);
+        	  updateAllQuantitySubtotal();
+        	  keyEventListen();
+        	  calcSummaryInformation();
+          }
+        },
+        error: function () {
+          alert("無法連線到伺服器！");
+        }
+      });
+    }
+
+    function updateAllQuantitySubtotal() {
+    	for (var i=0 ; i < client_cart_obj.length ; i++) {
+    		var id = client_cart_obj[i];
+    		var amount = client_cart_amount[i];
+    		var price = $('#price_' + id).html();
+    		$('#quantity_' + id).val(amount);
+    		var subtotal = calcSubTotal(price, amount);
+    		$('#subtotal_' + id).html(subtotal);
+    	}
+    }
+
+    function isNumberKey(evt){
+	    var charCode = (evt.which) ? evt.which : evt.keyCode
+	    if (charCode > 31 && (charCode < 48 || charCode > 57))
+	        return false;
+	    return true;
+    }
+
+    function keyEventListen() {
+    	$('input[name="quantity[]"').on(
+          'keypress',
+          function (e) {
+        	  return isNumberKey(e);
+          }
+      );
+
+    	$('input[name="quantity[]"').on(
+ 	        'keyup',
+ 	        function (e) {
+ 	        	var select = $(this).prop('id');
+ 	        	var action = select.split('_')[0];
+ 	        	var id = select.split('_')[1];
+ 	          var price = $('#price_' + id).html();
+ 	          var quantity =  $(this).val();
+ 	          var subtotal = calcSubTotal(price, quantity);
+ 	          $('#subtotal_' + id).html(subtotal);
+ 	          updateClentCartData(id, quantity);
+ 	          calcSummaryInformation();
+ 	        }
+ 	    );
+
+    	$('button[name="remove[]"').click(function () {
+    		var id = (this.id).split('_')[1];
+    		var i = client_cart_obj.indexOf(id);
+
+    		if (i > -1) {
+	    		client_cart_obj.splice(i, 1);
+	    		client_cart_amount.splice(i, 1);
+    		}
+
+    		updateCartDataToClent();
+    		$('#row_' + id).remove();
+    		if (client_cart_obj.length == 0)
+  		      alert("購物車沒有任何商品！");
+    		calcSummaryInformation();
+    	});
+
+
+    }
+
+    function calcSubTotal(price, quantity) {
+    	var result = (parseFloat(price) * parseFloat(quantity)).toFixed(2);
+    	result = isNaN(result) ? 0.00 : result;
+    	return result;
+    }
+
+    function updateCartTable(data) {
+    	table_html = '';
+    	$("#cart_table > tbody").empty();
+        $.each(data, function(index, value) {
+        	table_html += '<tr id="row_' + value.id + '">';
+        	table_html += '<td class="align-middle text-center">' + value.id + '</td>';
+        	table_html += '<td class="align-middle"><p class="text-break">' + value.name + '</p></td>';
+        	table_html += '<td class="align-middle text-center"><span id="price_' + value.id + '">' + value.price + '</td>';
+        	table_html += '<td class="align-middle text-center"><input type="input" name="quantity[]" class="input-sm form-control text-center" id="quantity_' + value.id + '" maxlength="5" min="0" step="1"></td>';
+        	table_html += '<td class="align-middle text-center"><strong><span id="subtotal_' + value.id + '"><strong></td>';
+        	table_html += '<td class="align-middle text-center"><button id="remove_' + value.id + '" name="remove[]" type="button" class="btn btn-danger">移除</button></td>';
+        	table_html += '</tr>';
+        })
+
+      $("#cart_table > tbody").append(table_html);
+    }
+
+    function getCartDataFromClient() {
+    	let cart = JSON.parse(localStorage.getItem("client_cart_obj"));
+    	let amount = JSON.parse(localStorage.getItem("client_cart_amount"));
+    	cart = !cart ? new Array() : cart;
+    	amount = !amount ? new Array() : amount;
+    	return [cart, amount];
+    }
+
+    function updateCartDataToClent() {
+    	localStorage.setItem("client_cart_obj", JSON.stringify(client_cart_obj));
+    	localStorage.setItem("client_cart_amount", JSON.stringify(client_cart_amount));
+    }
+
+    function updateClentCartData(id, quantity) {
+    	var i = client_cart_obj.indexOf(id);
+    	client_cart_amount[i] = (quantity === "") ? 0 : parseInt(quantity);
+    	updateCartDataToClent();
+    }
+
+    function calcSummaryInformation() {
+    	var total_item = client_cart_obj.length;
+    	var total_price = 0.00;
+    	var total_quantity = 0;
+
+    	for(var i=0 ; i < total_item ; i++) {
+    		var id = client_cart_obj[i];
+    		var price = $('#price_' + id).html();
+    		var quantity = $('#quantity_' + id).val()
+    		calc = parseFloat(price) * parseInt(quantity);
+    		total_price += isNaN(calc) ? 0.0 : calc;
+    		total_quantity += (isNaN(quantity) || (quantity == "")) ? 0 : parseInt(quantity);
+    	}
+
+    	// Client端日期
+    	var date = new Date();
+    	var iso_date = date.toISOString();
+
+    	$("#date").html(iso_date.substring(0, 10));
+    	$("#total_item").html(total_item);
+    	$("#total_quantity").html(total_quantity);
+    	$("#summary").html(total_price.toFixed(2));
+    }
+
+    function setButtonState(id, action) {
+      if (!action) {
+          $('#' + id).prop('disabled', true);
+          $('#' + id).addClass('disabled');
+          $('#' + id).html('請先新增商品');
+      }
+      else {
+    	  $('#' + id).prop('disabled', false);
+        $('#' + id).removeClass('disabled');
+        $('#' + id).html('結帳');
+      }
+    }
+  </script>
+
+<a href="#" data-target="html" class="scroll-to-target scroll-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="static/js/jquery-3.5.1.min.js"></script>
+<script src="static/js/bootstrap.bundle.min.js"></script>
+<script src="static/js/bootstrap-select.min.js"></script>
+<script src="static/js/jarallax.min.js"></script>
+<script src="static/js/jquery.ajaxchimp.min.js"></script>
+<script src="static/js/jquery.appear.min.js"></script>
+<script src="static/js/jquery.circle-progress.min.js"></script>
+<script src="static/js/jquery.magnific-popup.min.js"></script>
+<script src="static/js/jquery.validate.min.js"></script>
+<script src="static/js/nouislider.min.js"></script>
+<script src="static/js/odometer.min.js"></script>
+<script src="static/js/swiper.min.js"></script>
+<script src="static/js/tiny-slider.min.js"></script>
+<script src="static/js/wnumb.min.js"></script>
+<script src="static/js/wow.js"></script>
+<script src="static/js/isotope.js"></script>
+<script src="static/js/countdown.min.js"></script>
+
+<script src="static/js/organik.js"></script>
+
+<script src="static/js/jquery-3.4.1.min.js"></script>
+<script src="static/js/jquery-confirm.js"></script>
+</body>
+</html>

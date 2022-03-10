@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>CakePHP: the rapid development php framework: Members</title>
+    <link href="statics/icon/favicon.ico" type="image/x-icon" rel="icon">
+    <link href="statics/icon/favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <link rel="stylesheet" type="text/css" href="cake.generic.css">
+
+    <script src="../statics/js/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="container">
+        <div id="header">
+            <h1><a href="../顧客/index.html"><img src="images/logo.png" class="img-responsive" alt=""></a></h1>
+        </div>
+		<div id = "hori"></div>
+        <div id="content">
+            <h2>餐點清單</h2>
+            <a href="meals.html">餐點管理</a>
+            <a href="customer.html">顧客管理</a>
+            <a href="deliveryman.html">外送員管理</a>
+            <a href="orderManage.html">訂單管理</a>
+			<br>
+            <a href="addMeal.html">新增餐點</a> <!-- 看負責人怎麼命名-->
+
+            <div id="flashMessage" class="message" style="display: none;"></div>
+
+            <table id="table">
+                <thead>
+                    <tr>
+                        <th>編號</th>
+                        <th>餐點名稱</th>
+                        <th>價錢</th>
+                        <th>餐點描述</th>
+                        <th>圖片</th>
+                        <th>卡路里</th>
+						<th>功能</th>
+                    </tr>
+                </thead>
+                <tbody id="meals_panel">
+                <!--  
+					<tr>
+						<td>1</td>
+                        <td>麥香雞</td>
+                        <td>79</td>
+                        <td>經典</td>
+                        <td><a href="C:\Users\judy9\Downloads\SA環境與程式\SA環境與程式\Project\前端layout\Big.jpg">Big.jpg</a></td>
+                        <td>500</td>
+						<td> <a href="mealEdit.html">編輯</a> | <a href="javascript: deleteMember(' + value['id'] + ');">刪除</a></td>
+					</tr>
+					-->
+                </tbody>
+            </table>
+            <script type="text/javascript">
+            function getAllProduct() {
+                $.ajax({
+                  type: "GET",
+                  url: "../api/meals.do",
+                  crossDomain: true,
+                  cache: false,
+                  dataType: 'json',
+                  timeout: 5000,
+                  success: function (response) {
+                    if (response.status == 200) {
+                  	var meals_panel = '';
+                  	console.log(response);
+                  	$.each(response.response.data, function (){
+                  		meals_panel += addProduct(this);
+                  	})
+                  	
+                  	$("#meals_panel").append(meals_panel);
+                    }
+                  },
+                  error: function () {
+                    alert("無法連線到伺服器！");
+                  }
+                });
+              };
+
+              getAllProduct();
+              
+              function addProduct(data) {
+              	let inner_html = '';
+              	inner_html += '<tr><td>' + data.meals_id + '</td>';
+              	inner_html += '<td>' + data.name + '</td>';
+              	inner_html += '<td>' + data.price + '</td>';
+              	inner_html += '<td>' + data.description + '</td>';
+              	inner_html += '<td><img src="../顧客/'+ data.image+ '" width="201" height="113" "class="img-responsive" alt=""></td>';
+              	inner_html += '<td>' + data.kcal + '</td>';
+              	inner_html += '<td> <a href="mealEdit.html">編輯</a> | <a href="javascript: deleteMember(' + data.meals_id + ');">刪除</a></td>';
+              	
+          		return inner_html;
+              }
+                // 全域變數紀錄SQL指令下的次數
+                
+                /*
+                var sql_num = 0;
+                function deleteMember(id) {
+                    var check = window.confirm("確認刪除顧客？");
+                    if (check == true) {
+                        console.log("You pressed OK!");
+                        var request = {'id': id};
+                        var data_string = JSON.stringify(request);
+                        $.ajax({
+                            type: "DELETE",
+                            url: "api/member.do",
+                            crossDomain: true,
+                            data: data_string,
+                            cache: false,
+                            dataType: 'json',
+                            timeout: 5000,
+                            success: function (response) {
+                                if(response.status == 200){
+                                    $("#flashMessage").html("成功! 已經成功刪除顧客...");
+                                    $("#flashMessage").show();
+                                    getAllMember();
+                                }
+                                console.log(response);
+                            },
+                            error: function () {
+                                alert("無法連線到伺服器！");
+                            }
+                        });
+                    }
+                    else {
+                        console.log("You pressed Cancel!");
+                    }
+                }
+
+                function getAllMember() {
+                    // 發出POST的GET請求取得所有會員列表
+                    $.ajax({
+                            type: "GET",
+                            url: "api/member.do",
+                            crossDomain: true,
+                            cache: false,
+                            dataType: 'json',
+                            timeout: 5000,
+                            success: function (response) {
+                                if(response.status == 200){
+                                    updateTable(response.response.data);
+                                    updateSQLTable(response.response);
+                                }
+                                console.log(response);
+                            },
+                            error: function () {
+                                alert("無法連線到伺服器！");
+                            }
+                    });
+                }
+
+                // 更新會員列表表格
+                function updateTable(data) {
+                    $("#table > tbody").empty();
+                    var table_html = '';
+                    $.each(data, function(index, value) {
+                        table_html += '<tr><td scope="row">' + value['id'] + '</td>';
+                        table_html += '<td>' + value['name'] + '</td>';
+                        table_html += '<td>' + value['email'] + '</td>';
+                        table_html += '<td>' + value['login_times'] + '</td>';
+                        table_html += '<td>' + value['status'] + '</td>';
+                        table_html += '<td>' + '<a href="edit.html?id=' + value['id'] + '">編輯</a> | ';
+                        table_html += '<a href="javascript: deleteMember(' + value['id'] + ');">刪除</a></td></tr>';
+                    })
+
+                    $("#table > tbody").append(table_html);
+                }
+
+                // 更新SQL指令歷史表格
+                function updateSQLTable(data) {
+                    $("#sql_log > tbody").empty();
+                    var time = (data.time / 1000000).toFixed(2);
+                    var table_html = "";
+
+                    sql_num = 0;
+                    sql_num += 1
+
+                    table_html += '<tr>';
+                    table_html += '<td>' + sql_num + '</td>';
+                    table_html += '<td>' + data.sql + '</td>';
+                    table_html += '<td style="text-align: right">' + '0' + '</td>';
+                    table_html += '<td style="text-align: right">' + data.row + '</td>';
+                    table_html += '<td style="text-align: right">' + data.row + '</td>';
+                    table_html += '<td style="text-align: right">' + time + '</td>';
+                    table_html += '</tr>';
+                    $("#sql_log > tbody").append(table_html);
+                    $("#sql_summary").html("(default) " + data.row + " queries took " + time + " ms");
+                }
+                $(document).ready(function() {
+                    getAllMember();
+                });
+                */
+            </script>
+        </div>
+        <!--
+        <div id="footer">
+            <a href="http://www.cakephp.org/" target="_blank" id="cake-powered"><img src="statics/img/cake.power.gif" alt="CakePHP: the rapid development php framework" border="0"></a>
+            <p>CakePHP 2.6.10</p>
+        </div>
+    	</div>
+
+
+    <table class="cake-sql-log" id="sql_log" summary="Cake SQL Log" cellspacing="0">
+        <caption id="sql_summary">(default) 0 query took 0 ms</caption>
+        <thead>
+            <tr>
+                <th>Nr</th>
+                <th>Query</th>
+                <th>Error</th>
+                <th>Affected</th>
+                <th>Num. rows</th>
+                <th>Took (ms)</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    -->
+</body>
+
+</html>
+
+
+
+

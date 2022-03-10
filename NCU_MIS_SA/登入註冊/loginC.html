@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+	<head>
+		<meta charset="utf-8" />
+		<title>顧客登入</title>
+		<style type="text/css">
+			*{ font-family:微軟正黑體; }
+			body{ background-color: white; }
+			#email,#password{
+				width: 200px;
+  				height: 20px;
+ 				margin: 10px;
+  				color: #5b9422;
+			}
+			h5{
+  				margin: 20px;
+  				color: #a3a2a3;
+			}
+			h5:hover{ color: black; }
+			#container{
+				padding: 10px;
+  				width: 230px;
+  				height: 280px;
+  				background-color: white;
+  				border-radius: 5px;
+  				border-top: 10px solid #5b9422;
+  				box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+
+				position:relative;
+  				margin: auto;
+  				top: 50px;
+				text-align:center;
+			}
+			.system_name{
+  				position:relative;
+  				margin: auto;
+  				top: 30px;
+  				text-align:center;
+			}
+			.submit{
+  				color: white;
+  				background: #5b9422;
+  				width: 200px;
+  				height: 30px;
+  				margin: 10px;
+  				padding: 5px;
+  				border-radius: 5px;
+  				border: 0px;
+			}
+			.submit:hover{ background: #48691a; }
+			input{
+  				padding: 5px;
+  				border: none;
+  				border:solid 1px #ccc;
+  				border-radius: 5px;
+			}
+			.go_homepage{
+				position:relative;
+  				margin: auto;
+  				top: 100px;
+  				text-align:center;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="system_name"><img src="../顧客/images/logo.png" class="img-responsive" alt=""></div>
+		<div class="login_page">
+			<div id="container">
+				<div class="login">
+					<h3>登入 Login</h3>
+
+ 					<form id="form">
+            					<input type="text" id="email" name="email" placeholder="帳號 ( 電子郵件 )" required>
+            					<div class="tab"></div>
+            					<input type="password" id="password" name="password" placeholder="密碼" required>
+            					<div class="tab"></div>
+            					<input type="submit" value="登入" class="submit" data-action="submit">
+          				</form>
+          	<script src="../statics/js/jquery-3.4.1.min.js"></script>
+  			<script src="../statics/js/jquery-confirm.js"></script>
+			<script type="text/javascript">
+			const submitBtn = document.querySelector('[data-action="submit"]');
+
+			submitBtn.addEventListener("click", processFormData);
+			
+			
+			function processFormData(e){
+				
+				const form = document.forms['form'];
+				const email = form.elements.email.value;
+				const password = form.elements.password.value;
+                    
+            	if (email == "" || password == "") {
+            		alert("顧客信箱及密碼不能為空！");
+            	}            	
+            	else {
+                    // 將資料組成JSON格式
+                    var data_object = {
+                        "email": email,
+                        "password": password
+                   
+                    };
+                    
+
+                    // 將JSON格式轉換成字串
+                    var data_string = JSON.stringify(data_object);
+         
+            	$.ajax({
+            		type: "GET",
+            		url: "../api/login.do",
+            		data: data_string,
+               		crossDomain: true,
+                	cache: false,
+                	dataType: 'json',
+               	 	timeout: 5000,
+            	           	
+            		success: function (response) {           			
+            			if(response.status == 200){
+            					console.log("是顧客");
+            					setCookie("email",response['response']['data'][0]['email'],1);
+            					var parmem = getCookie("email");
+            					parent.document.location.href = "../顧客/index.html?customer_email="+parmem; //如果顧客登入成功則跳到首頁
+                        }
+            			else{           				
+            				alert("信箱或密碼錯誤!");
+            				
+            				form.member_email.value = "";
+            				form.member_password.value = "";
+            				(document.getElementById('email').focus()) ;
+            			}
+            		},
+            	
+            		error: function () {
+            			if(email==="customer@gmail.com" && password==="Aa123123"){
+       					console.log("是顧客");
+    					parent.document.location.href = "../顧客/index.html";
+            			//alert("無法連線到伺服器！");
+            			}
+            		}
+            	});
+            	}
+            	};
+            	
+            	function setCookie(cookieName, cookieValue, exdays) {
+            		  
+            		  var d = new Date();
+            		  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            		  var expires = "expires="+d.toUTCString();
+            		  document.cookie = cookieName + "=" + cookieValue + "; " + expires +";path=/";  
+            	}
+            	
+            	//取cookie 
+            	function getCookie(cookieName) {
+        			var name = cookieName + "=";
+        			var decodedCookie = decodeURIComponent(document.cookie);
+        			var ca = decodedCookie.split(';');
+        			for(var i=0; i<ca.length; i++) {
+        			      var c = ca[i];
+        			      while (c.charAt(0)==' ') c = c.substring(1);
+        			      if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+        	  		}
+          			return "";
+        		}
+            	
+            	//刪除cookie
+            	function delCookie(name){
+            	
+            		document.cookie = name   +"="+   cval   +";expires="+   exp.toGMTString();
+            	}
+            	
+                //點擊登出按鈕
+                $('#btn').click(function() {
+            	    	logout_();
+            	    	console.log(success);
+            	});
+                
+                function logout_(){
+                	delCookie("name");
+                	delCookie("id");
+                }    
+            </script>
+
+					<h5><a href="registerC.html">註冊帳號</a></h5>
+				</div>
+			</div>
+			<h5 class="go_homepage"><a href="../顧客/index.html">回首頁</a></h5>
+		</div>
+	</body>
+</html>

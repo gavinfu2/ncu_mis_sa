@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Spicemystery a Hotel and Resturant Category Flat Bootstarp Responsive Website Template | Home :: w3layouts</title>
+    <link href="statics/icon/favicon.ico" type="image/x-icon" rel="icon">
+    <link href="statics/icon/favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <link rel="stylesheet" type="text/css" href="./Delivery_files/delivery.css">
+
+   <script src="../statics/js/jquery-3.4.1.min.js"></script>
+	<script src="../statics/js/jquery-confirm.js"></script>
+</head>
+
+<body>
+    <div id="container">
+        <div id="header">
+            <h1><a href="../顧客/index.html"><img src="images/logo.png" class="img-responsive" alt=""></a></h1>
+        </div>
+		<div id = "hori"></div>
+        <div id="content">
+            <h2>外送員接單畫面</h2>
+            <div id="flashMessage" class="message" style="display: none;"></div>
+
+            <table id="table">
+                <thead>
+                    <tr>
+                        <th>編號</th>                     
+                        <th>手機</th>
+                        <th>名字</th>
+                        <th>住址</th>                     
+						<th>功能</th>
+                    </tr>
+                </thead>
+               
+                <tbody>
+					<!-- <tr>
+						<td>1</td>
+                        <td>0945635856</td>
+						<td>小明</td>
+                        <td>台北市</td>
+						<td> <a href="deliverymanStatus.html">接單</a> </td>
+					</tr> --> 
+                </tbody>
+               
+            </table>
+            </div>
+            <script type="text/javascript">
+                // 全域變數紀錄SQL指令下的次數
+                var sql_num = 0;
+                var id = 1;
+                var customer_id;
+                var table_html2='';
+                getAllOrderData();
+                
+                
+                    // 發出POST的GET請求取得所有會員列表
+                    function getAllOrderData() {
+                  	  $.ajax({
+                          type: "GET",
+                          url: "../api/order.do",
+                          //data: "order_id=" + id,
+                          crossDomain: true,
+                          cache: false,
+                          dataType: 'json',
+                          timeout: 5000,
+                          success: function (response) {
+                          	console.log(response);
+                              if(response.status == 200){
+                            	  updateTable(response.response.data);
+                              }
+                          },
+                          error: function () {
+                              alert("無法連線到伺服器！");
+                          }
+                    });
+                  }
+
+                // 更新會員列表表格
+                function updateTable(data) {
+                    $("#table > tbody").empty();
+                    table_html2='';
+                    table_html = '';
+                    $.each(data, function(index, value) {
+                    	customer_id = value['order_info']['customer_id'];
+                    	console.log("customer_id = " + value['order_info']['customer_id']);
+                    	table_html += '<tr><td>' + value['order_info']['order_id'] + '</td>'; 
+                    	table_html2+=table_html;
+                    	getCustomer();                       
+                         
+                        //console.log("order_id = " + value['order_info']['order_id']);
+                    })
+                }
+                function updateTable2(data) {
+                		table_html = '';
+                		$.each(data, function(index, value){
+                        table_html += '<td>' + value['phone'] + '</td>';
+                        console.log(data.phone);
+                        table_html += '<td>' + value['name'] + '</td>';
+                        table_html += '<td>' + value['address'] + '</td>';
+                        table_html += '<td> <a href="deliverymanStatus.html">接單</a> </td></tr>';
+                        table_html2+=table_html;
+                        $("#table > tbody").append(table_html2);
+                		})
+                    }
+                    
+                
+
+                // 更新SQL指令歷史表格
+                /*function updateSQLTable(data) {
+                    $("#sql_log > tbody").empty();
+                    var time = (data.time / 1000000).toFixed(2);
+                    var table_html = "";
+
+                    sql_num = 0;
+                    sql_num += 1
+
+                    table_html += '<tr>';
+                    table_html += '<td>' + sql_num + '</td>';
+                    table_html += '<td>' + data.sql + '</td>';
+                    table_html += '<td style="text-align: right">' + '0' + '</td>';
+                    table_html += '<td style="text-align: right">' + data.row + '</td>';
+                    table_html += '<td style="text-align: right">' + data.row + '</td>';
+                    table_html += '<td style="text-align: right">' + time + '</td>';
+                    table_html += '</tr>';
+                    $("#sql_log > tbody").append(table_html);
+                }
+                $(document).ready(function() {
+                    getAllOrderData();
+                });*/
+                
+                function getCustomer() {
+                    $.ajax({
+                        type: "GET",
+                        url: "../api/customer.do",
+                        crossDomain: true,
+                        data: "customer_id=" + customer_id,
+                        cache: false,
+                        dataType: 'json',
+                        timeout: 5000,
+                        success: function (response) {
+                            if(response.status == 200){
+                            	console.log(response);
+                            	updateTable2(response.response.data);
+                            }    
+                        },
+                        error: function () {
+                            alert("無法連線到伺服器！");
+                        }
+                    });
+                }
+            </script>
+   
+    </div>
+
+</body>
+
+</html>

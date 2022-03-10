@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+	<head>
+		<meta charset="utf-8" />
+		<title>顧客註冊</title>
+		<style type="text/css">
+			*{ font-family:微軟正黑體; }
+			body{
+				background-color: white;
+				height:680px;
+			}
+			#name,#phone,#address,#email,#password,#comfirm_password{
+				width: 250px;
+  				height: 20px;
+ 				margin: 10px;
+  				color: #5b9422;
+			}
+			h5{
+  				margin: 20px;
+  				color: #a3a2a3;
+			}
+			h5:hover{ color: black; }
+			#container{
+				padding: 10px;
+  				width: 280px;
+  				height: 480px;
+  				background-color: white;
+  				border-radius: 5px;
+  				border-top: 10px solid #5b9422;
+  				box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+
+				position:relative;
+  				margin: auto;
+  				top: 20px;
+				text-align:center;
+			}
+			.system_name{
+  				position:relative;
+  				margin: auto;
+  				top: 10px;
+  				text-align:center;
+			}
+			.submit{
+  				color: white;
+  				background: #5b9422;
+  				width: 200px;
+  				height: 30px;
+  				margin: 10px;
+  				padding: 5px;
+  				border-radius: 5px;
+  				border: 0px;
+			}
+			.submit:hover{ background: #48691a; }
+			input{
+  				padding: 5px;
+  				border: none;
+  				border:solid 1px #ccc;
+  				border-radius: 5px;
+			}
+			.go_homepage{
+				position:relative;
+  				margin: auto;
+  				top: 50px;
+  				text-align:center;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="system_name"><img src="../顧客/images/logo.png" class="img-responsive" alt=""></div>
+		<div class="register_page">
+			<div id="container">
+				<div class="register">
+					<h3>註冊 Sign Up</h3>
+					<form id="form">
+            					<input type="text" id="name" name="name" placeholder="使用者姓名" required>
+            					<div class="tab"></div>
+								<input type="text" id="phone" name="phone" placeholder="電話號碼" required>
+            					<div class="tab"></div>
+								<input type="text" id="address" name="address" placeholder="地址" required>
+            					<div class="tab"></div>
+            					<input type="text" id="email" name="email" placeholder="帳號 ( 電子郵件 )" required>
+            					<div class="tab"></div>
+            					<input type="password" id="password" name="password" placeholder="密碼" required>
+            					<div class="tab"></div>
+            					<input type="password" id="comfirm_password" name="comfirm_password" placeholder="確認密碼" required>
+            					<div class="tab"></div>
+            					<input type="submit" value="註冊" class="submit" data-action="submit">
+            					
+          				</form>
+          				<!--  <button id="submit" type="button">送出</button>-->
+					<h5><a href="loginC.html">登入帳號</a></h5>
+				</div>
+			</div>
+			<h5 class="go_homepage"><a href="../顧客/index.html">回首頁</a></h5>
+		</div>
+		    <script src="../statics/js/jquery-3.4.1.min.js"></script>
+  			<script src="../statics/js/jquery-confirm.js"></script>
+		<script type="text/javascript">
+			const submitBtn = document.querySelector('[data-action="submit"]');
+
+			submitBtn.addEventListener("click", processFormData);
+
+			function processFormData(e) {
+				const form = document.forms['form'];
+				const name = form.elements.name.value;
+				const phone = form.elements.phone.value;
+				const address = form.elements.address.value;
+				const email = form.elements.email.value;
+				const password = form.elements.password.value;
+				const comfirm_password = form.elements.comfirm_password.value;
+
+				var phone_rule = /^09\d{8}$/;
+				var email_rule = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/;
+                var password_rule = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+				if (!phone_rule.test(phone)){
+					alert("電話格式不符！");
+				}
+				else if (!email_rule.test(email)) {
+                            		alert("Email格式不符！");
+                        	}
+                        	else if(!password_rule.test(password)) {
+                           		alert("密碼格式不符，長度至少8，且至少包含一個數字和英文字母！");
+                        	}
+				else if(comfirm_password != password){
+					alert("密碼輸入不一致 !");
+				}
+				else{
+					var data_object = {
+                        "name" : name,
+						"phone" : phone,
+						"address" : address,
+                        "email" : email,
+                        "password" : password
+                    };
+					
+					var data_string = JSON.stringify(data_object);
+					//alert("success！");
+					$.ajax({
+                    	type: "POST",
+                        url: "../api/customer.do",
+                        data: data_string,
+                        crossDomain: true,
+                        cache: false,
+                        dataType: 'json',
+                        timeout: 5000,
+                        success: function (response) {
+                        	
+                        	$('#flashMessage').html(response.message);
+                            $('#flashMessage').show();
+                            	if(response.status == 200){
+                            		alert("success！");
+                                }
+                            },
+                            error: function () {
+                            	alert("無法連線到伺服器！");
+                            }
+                   });
+				}
+			}
+       
+		</script>
+	</body>
+</html>
